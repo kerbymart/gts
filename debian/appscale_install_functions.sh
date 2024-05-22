@@ -507,7 +507,22 @@ installgosdk()
 
 installpycapnp()
 {
-    pipwrapper pycapnp
+    # Check if pycapnp is already installed and at the correct version.
+    PYCAPNP_VERSION=$(pip list --format=legacy | grep pycapnp | awk '{print $2}')
+    if [ "$PYCAPNP_VERSION" == "0.6.4" ]; then
+        echo "pycapnp is already installed at the correct version."
+        return 0
+    fi
+
+    # If pycapnp is installed but not at the correct version, uninstall it.
+    if [ -n "$PYCAPNP_VERSION" ]; then
+        echo "Found pycapnp at version $PYCAPNP_VERSION, but version 0.6.4 is required. Uninstalling..."
+        pip uninstall -y pycapnp
+    fi
+
+    # Install the correct version of pycapnp.
+    echo "Installing pycapnp version 0.6.4..."
+    pipwrapper pycapnp==0.6.4
 }
 
 installpymemcache()
